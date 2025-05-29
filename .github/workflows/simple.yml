@@ -5,64 +5,65 @@ on:
     branches: [main]
 
 jobs:
-    lintTest:
-      name: Lint
-      runs-on: ubuntu-latest
-      steps:
-        - name: Clone Repository
-          uses: actions/checkout@v2
-        - name: Install Dependencies
-          run: |
-            echo "Running and Installing Dependencies ..."
-            npm install
-        - name: Run Linting
-          run: |
-            echo "Running Linting tests .."
-            npm run lint
-          env:
-            CI: true
-    securityCheck:
-        name: Security Check
-        runs-on: ubuntu-latest
-        steps:
-        - name: Checks the Security
-          run: |
-            echo "Running Securuty Checks .."
-            sleep 5s;
-            echo "Running Securuty Checks .."
-            sleep 5s;
-            echo "Running Securuty Checks .."
-            sleep 5s;
-          env:
-            CI: true   
-    dockerize:
-        runs-on: ubuntu-latest
+  lintTest:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v2
 
-        steps:
-        - name: Checkout source
-          uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: |
+          echo "Running and Installing Dependencies ..."
+          npm install
 
-        - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+      - name: Run Linting
+        run: |
+          echo "Running Linting tests .."
+          npm run lint
+        env:
+          CI: true
 
-        - name: Log in to Docker Hub
-          uses: docker/login-action@v3
-          with:
-           username: ${{ secrets.DOCKER_USERNAME }}
-           password: ${{ secrets.DOCKER_PASSWORD }}  
+  securityCheck:
+    name: Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checks the Security
+        run: |
+          echo "Running Security Checks .."
+          sleep 5s
+          echo "Running Security Checks .."
+          sleep 5s
+          echo "Running Security Checks .."
+          sleep 5s
+        env:
+          CI: true
 
-        - name: Debug - Check tag format
-          run: |
-           echo "Tag: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}"
+  dockerize:
+    name: Dockerize
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-        - name: Build and push Docker image
-          uses: docker/build-push-action@v5
-          with:
-           context: .
-           push: true
-           tags: |
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Debug - Check tag format
+        run: echo "Tag: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}"
+        
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
             ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:${{ github.sha }}
-
 
