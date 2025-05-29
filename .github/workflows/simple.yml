@@ -61,5 +61,5 @@ jobs:
           context: .
           push: true
           tags: |
-            sanjayatnerdience/nextjs-app/:latest
+            sanjayatnerdience/nextjs-app:latest
 
